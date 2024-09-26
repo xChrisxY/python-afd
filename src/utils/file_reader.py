@@ -2,12 +2,21 @@ import os
 import pandas as pd
 from docx import Document
 from bs4 import BeautifulSoup
+from openpyxl import load_workbook
 
 def read_text_from_excel(file_path):
-    df = pd.read_excel(file_path)
-    #data_frame = df.round(1)
-    text = '\n'.join(df.astype(str).values.flatten())
-    return text
+    
+    content = []
+    
+    wb = load_workbook(file_path, data_only=True)
+    sheet = wb.active  
+
+    for row in sheet.iter_rows(values_only=False):
+        for cell in row:
+            if cell.value is not None: 
+                content.append([f"Fila: {cell.row}", f"Columna: {cell.column}", f"Valor: {cell.value}"])
+                
+    return content
 
 def read_text_from_csv(file_path):
     
