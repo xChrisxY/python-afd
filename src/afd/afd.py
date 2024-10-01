@@ -55,5 +55,4 @@ class SQLInjectionAFD:
                 return True  
         return False
 
-text = "¿Por qué lo usamos? Es un hecho establecido hace demasiado tiempo que un lector ,se distraerá con el contenido del texto de un sitio mientras que mira su diseñ,El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal ,las letras, al contrario de usar textos como por ejemplo 'Contenido aquí, contenido aquí,'; DROP TABLE users; -- Estos textos hacen parecerlo un español que se puede leer."
 

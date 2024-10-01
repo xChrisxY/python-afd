@@ -30,17 +30,30 @@ def read_text_from_csv(file_path):
 
 def read_text_from_docx(file_path):
     
+    content = []
+    
     doc = Document(file_path)
-    text = '\n'.join(para.text for para in doc.paragraphs)
-    return text
+
+    for para in doc.paragraphs:
+        content.append(para.text)
+
+    return content
 
 def read_text_from_html(file_path):
+    
+    content = []
 
     with open(file_path, 'r', encoding='utf-8') as file:
         soup = BeautifulSoup(file, 'html.parser')
 
     text = soup.get_text()
-    return text
+    
+    for line in text.splitlines():
+        claned_line = line.strip()
+        if claned_line:
+            content.append(claned_line)
+               
+    return content
 
 def read_text_from_txt(file_path):
     

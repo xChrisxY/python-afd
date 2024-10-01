@@ -3,6 +3,7 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter import filedialog, messagebox
 from utils.file_reader import read_text
 from afd.afd import SQLInjectionAFD
+from afd.afd_last import SQLInjectionAFD
 import csv
 import os
 from tkinter import ttk
@@ -21,7 +22,7 @@ class MainWindow():
 
         self.text_file = []
         self.results = {}
-        self.results_excel = []
+        self.results_excel_html = []
         self.extension = None
 
         self.create_widgets()
@@ -39,7 +40,7 @@ class MainWindow():
             self.frame, text="Iniciar Análisis", command=self.analyze)
         self.analyze_button.pack(pady=10)
 
-        self.results_area = ScrolledText(self.frame, height=15, width=90, font=('Helvetica', 10))
+        self.results_area = ScrolledText(self.frame, height=15, width=90, font=('Helvetica', 16))
         self.results_area.pack(pady=10)
 
         self.export_button = ttk.Button(
@@ -76,7 +77,7 @@ class MainWindow():
 
         afd = SQLInjectionAFD()
 
-        if self.extension == '.txt':
+        if self.extension == '.txt' or self.extension == '.docx':
 
             for index, case in enumerate(self.text_file):
                 result = afd.process(case)
@@ -85,41 +86,66 @@ class MainWindow():
                     self.results[index] = case
                     self.results_area.insert('end', case + '\n')                
 
-        elif self.extension == '.csv' or '.xlsx' or self.extension == '.xls':
+        elif self.extension == '.csv' or self.extension == '.xlsx' or self.extension == '.xls':
             
             for case in self.text_file:
                 result = afd.process(case[2])
+                print(f"Input: {case} => Detected SQLi: {result}")
                 if result:
-                    print(f"Input: {case} => Detected SQLi: {result}")
+                    
                     self.results_area.insert(
                         'end', f'{case[0]} {case[1]} {case[2]}' + '\n')
-                    self.results_excel.append(case)
+                    self.results_excel_html.append(case)
+                    
+        elif self.extension == '.html':
+            
+            for case in self.text_file:
+                result = afd.process(case)
+                if result:
+                    
+                    self.results_area.insert(
+                        'end', f'Patrón detectado -> {case}' + '\n'
+                    )
+                    
+                    self.results_excel_html.append(case)
 
     def export_results(self):
 
-        if len(self.results) > 0 or len(self.results_excel):
+        if len(self.results) > 0 or len(self.results_excel_html) > 0:
 
             archivo_csv = 'resultados.csv'
 
-            if self.extension == '.txt':
+            if self.extension == '.txt' or self.extension == '.docx':
 
                 with open(archivo_csv, mode='w', newline='', encoding='utf-8') as file:
 
                     writer_csv = csv.writer(file)
 
                     for index, value in self.results.items():
+                        print([index, value])
                         writer_csv.writerow([index, value])
 
-            if self.extension == '.csv' or '.xlsx' or self.extension == '.xls':
+            if self.extension == '.csv' or  self.extension == '.xlsx' or self.extension == '.xls':
 
                 with open(archivo_csv, mode='w', newline='', encoding='utf-8') as file:
                     writer_csv = csv.writer(file)
 
-                    for i in self.results_excel:
+                    for i in self.results_excel_html:
                         writer_csv.writerow([i[0], i[1], i[2]])
+                        
+            if self.extension == '.html':
+                
+                with open(archivo_csv, mode='w', newline='', encoding='utf-8') as file:
+                    writer_csv = csv.writer(file)
+
+                    for i in self.results_excel_html:
+                        writer_csv.writerow([i])
+                
 
             messagebox.showinfo(
                 "Exitoso", f"El archivo ha sido guardado en {archivo_csv}")
+            self.results_excel_html = []
+            self.results = []
 
         else:
 
