@@ -3,7 +3,6 @@ from tkinter.scrolledtext import ScrolledText
 from tkinter import filedialog, messagebox
 from utils.file_reader import read_text
 from utils.read_all_file import read_all_text
-#from afd.afd import SQLInjectionAFD
 from afd.afd_last import SQLInjectionAFD
 import csv
 import os
