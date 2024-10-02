@@ -54,35 +54,39 @@ class MainWindow():
     def create_widgets(self):
         
         self.frame = ttk.Frame(self.master, padding="20")
-        self.frame.pack(fill=tk.BOTH, expand=True)
-        #self.frame.grid(row=0, column=0, sticky="nsew")
+        #self.frame.pack(fill=tk.BOTH, expand=True)
+        self.frame.grid(row=0, column=0, sticky="nsew")
 
         self.load_text_button = ttk.Button(
             self.frame, text="Cargar lista de patrones", command=self.load_text_file)
-        self.load_text_button.pack(pady=10)   
-        #self.load_text_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        #self.load_text_button.pack(pady=10)   
+        self.load_text_button.grid(row=0, column=0, padx=10, pady=20, sticky="w")
         
         self.load_text_button = ttk.Button(
             self.frame, text="Cargar archivo con patrones", command=self.load_text_with_patterns)
-        self.load_text_button.pack(pady=10)
-
+        #self.load_text_button.pack(pady=10)
+        self.load_text_button.grid(row=0, column=1, padx=10, pady=20, sticky="w")
+        
         self.analyze_button = ttk.Button(
             self.frame, text="Iniciar Análisis", command=self.analyze)
-        self.analyze_button.pack(pady=10)   
-        #self.analyze_button.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+        #self.analyze_button.pack(pady=10)   
+        self.analyze_button.grid(row=0, column=2, padx=10, pady=10, sticky="w")
 
         self.results_area = ScrolledText(self.frame, height=15, width=90, font=('Helvetica', 16), bg='#2E2E2E', fg='#FFFFFF', insertbackground='white', 
                                       selectbackground='#3b5998')
-        self.results_area.pack(pady=10)
-        #self.results_area.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+        #self.results_area.pack(pady=10)
+        self.results_area.grid(row=1, column=0, columnspan=3, padx=10, pady=20)
+        self.results_area.tag_configure("margin", lmargin1=15, lmargin2=25, rmargin=25)
         
         self.results_area.tag_configure("margin", lmargin1=25, lmargin2=25, rmargin=25)
 
         self.export_button = ttk.Button(
             self.frame, text="Exportar Resultados a CSV", command=self.export_results)
-        self.export_button.pack(pady=10)
-        #self.export_button.grid(row=2, column=0, columnspan=2, padx=10, pady=10)
+        #self.export_button.pack(pady=10)
+        self.export_button.grid(row=2, column=0, columnspan=3, pady=20)
         
+        self.master.grid_rowconfigure(1, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
 
     def load_text_file(self):
 
