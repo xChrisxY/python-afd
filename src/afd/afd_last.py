@@ -183,7 +183,9 @@ class SQLInjectionAFD:
             self.transitions[(105, char)] = 105
 
     def process(self, text):
+        
         current_state = 0  
+        
         text = text.lower()
         print(text)
         for char in text:
@@ -191,17 +193,47 @@ class SQLInjectionAFD:
             if transition in self.transitions:
                 current_state = self.transitions[transition]
                 print(f"[{current_state}]", end=" -> ")
+
             else:
                 current_state = 0  
 
             if current_state in self.final_states:
                 return True
+                            
         return False
+    
+    def process_of_text(self, text):
+        current_state = 0  
+        patterns_found = []
+        extracted_sql = ""
+        
+        text = text.lower()
+        print(text)
+        for char in text:
+            transition = (current_state, char)
+            if transition in self.transitions:
+                current_state = self.transitions[transition]
+                #print(f"[{current_state}]", end=" -> ")
+                extracted_sql += char
+            else:
+                current_state = 0  
+                extracted_sql = ""
 
+            if current_state in self.final_states:
+                patterns_found.append(extracted_sql)                
+                print(extracted_sql)
+                extracted_sql = ""
+                
+        if patterns_found:
+            return True, patterns_found                            
+        return False
+    
   
 afd = SQLInjectionAFD()
-text_to_check = "' or drop table users-- -"
-if afd.process(text_to_check):
-    print("Posible SQL Injection detectado.")
-else:
-    print("No se detectó SQL Injection.")
+#text_to_check = "Hola esta es mi cadena de texto ' OR '1'='1-- - ahora si ' and sleep(5)-- - probando probando ' union select database()-- -"
+#text_to_check = "Esto es un texto de ejemplo 1' order by 100-- - nada más"
+text_to_check = "' union select database()-- -"
+#if afd.process(text_to_check):
+#    print("Posible SQL Injection detectado.")
+#else:
+#    print("No se detectó SQL Injection.")
