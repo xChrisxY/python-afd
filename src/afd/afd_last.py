@@ -1,8 +1,8 @@
 class SQLInjectionAFD:
       
     def __init__(self):
-          
-        self.final_states = {21, 29, 40, 45, 76, 93, 109}
+        # quitamos q21 
+        self.final_states = {29, 40, 45, 76, 93, 109}
 
         self.transitions = {
             (0, "'"): 1,
@@ -107,9 +107,11 @@ class SQLInjectionAFD:
             (41, "[a-z]"): 42,
             (42, "[a-z]"): 42,
             (42, " "): 43,
+            (42, "-"): 43, # probando [hoy]
             (43, " "): 43,
             (43, "-"): 44,
             (44, "-"): 45,
+            (44, " "): 44, # probando 2 [hoy]
             (2, "u"): 77,
             (77, "n"): 78,
             (78, "i"): 79,
@@ -193,6 +195,7 @@ class SQLInjectionAFD:
             if transition in self.transitions:
                 current_state = self.transitions[transition]
                 print(f"[{current_state}]", end=" -> ")
+                print(char)
 
             else:
                 current_state = 0  
@@ -213,7 +216,7 @@ class SQLInjectionAFD:
             transition = (current_state, char)
             if transition in self.transitions:
                 current_state = self.transitions[transition]
-                #print(f"[{current_state}]", end=" -> ")
+                print(f"[{current_state}]", end=" -> ")
                 extracted_sql += char
             else:
                 current_state = 0  
@@ -223,17 +226,19 @@ class SQLInjectionAFD:
                 patterns_found.append(extracted_sql)                
                 print(extracted_sql)
                 extracted_sql = ""
+                current_state = 0
                 
         if patterns_found:
+            print(patterns_found)
             return True, patterns_found                            
         return False
     
   
 afd = SQLInjectionAFD()
-#text_to_check = "Hola esta es mi cadena de texto ' OR '1'='1-- - ahora si ' and sleep(5)-- - probando probando ' union select database()-- -"
+text_to_check = "Hola esta es mi cadena de texto ' OR '1'='1-- - ahora si ' and sleep(5)-- - probando probando ' union select database()-- - más texto papasito ' or drop table users -- hello world"
 #text_to_check = "Esto es un texto de ejemplo 1' order by 100-- - nada más"
-text_to_check = "' union select database()-- -"
-#if afd.process(text_to_check):
-#    print("Posible SQL Injection detectado.")
-#else:
-#    print("No se detectó SQL Injection.")
+#text_to_check = "' or drop table users --"
+if afd.process_of_text(text_to_check):
+    print("Posible SQL Injection detectado.")
+else:
+    print("No se detectó SQL Injection.")
